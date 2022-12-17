@@ -45,66 +45,50 @@ const MoviesLayout = () => {
 
 
 
-    class MoviesList extends React.Component {
+function MoviesList() {
 
-        // Constructor 
-        constructor(props) {
-            super(props);
+    const [items, setItems] = useState([]);
+    const [status, setStatus] = useState("idle");
 
-            this.state = {
-                items: [],
-                DataisLoaded: false
-            };
-        }
-
-        // ComponentDidMount is used to
-        // execute the code 
-        componentDidMount() {
-            fetch(
-                "http://localhost:5001/api/movies")
-                .then((res) => res.json())
-                .then((json) => {
-                    this.setState({
-                        items: json,
-                        DataisLoaded: true
-                    });
-                })
-        }
-        render() {
-            const { DataisLoaded, items } = this.state;
-            if (!DataisLoaded) return <div>
-                <h1> Pleses wait some time.... </h1> </div>;
-
-            return (
-                <div className="movie-grid-flex">
-                    {console.log(items)}
-                    <h1> Fetch data from an api in react </h1>
-                    <Container className="custom-grid-flex">
-                    <Row xs={1} md={3} className="custom-width g-4">
-                    {
-
-                        items.$values.map((item) => (
-
-                            <Col>
-                                <Card className = "card-element-movie" key={item.url} style={{ width: '18rem' }} >
-                                <Card.Img src={item.omdB_Datasets?.poster} style={{ maxHeight: '18rem' }}></Card.Img>
-                                <Card.Title style={{ padding: '20px' }}>{item.primarytitle}</Card.Title>
-                                <Card.Text style={{ padding: '20px' }}>{item.omdB_Datasets?.plot.slice(0, 250) + "..."}</Card.Text>
-
-                                {/* url: {item.url},
-                                title: {item.title},
-                                primarytitle: {item.primarytitle}*/}
-                                
-                                </Card>
-                            </Col>
-                        ))
-                        }
-                        </Row>
-                    </Container>
-                </div>
-            );
+        
+    async function loadMovies() {
+        try {
+            const res = await fetch("http://localhost:5001/api/movies/")
+            const json = await res.json();
+            setItems(json);
+            setStatus("done");
+        } catch (e) {
+            setStatus("an error")
         }
     }
+
+    useEffect(() => { loadMovies() }, []);
+
+    return (
+        <div><h1> Pleses wait some time.... </h1>
+            {(status === "done") &&
+                <Container className="custom-grid-flex">
+                    <Row xs={1} md={3} className="custom-width g-4">
+                        {
+
+                            items.$values.map((item) => (
+
+                                <Col>
+                                    <Card className="card-element-movie" key={item.url} style={{ width: '18rem' }} >
+                                        <Card.Img src={item.omdB_Datasets?.poster} style={{ maxHeight: '18rem' }}></Card.Img>
+                                        <Card.Title style={{ padding: '20px' }}>{item.primarytitle}</Card.Title>
+                                        <Card.Text style={{ padding: '20px' }}>{item.omdB_Datasets?.plot.slice(0, 250) + "..."}</Card.Text>
+                                    </Card>
+                                </Col>
+                            ))
+                        }
+                    </Row>
+                </Container>
+            }
+        </div >
+    );
+}
+
 
 
 
