@@ -1,0 +1,105 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.Logo {
+    color: var(--bs-navbar-brand-color);
+    text-decoration: none;
+}
+.Logo:hover {
+    color: var(--bs-navbar-brand-color);
+    text-decoration: none;
+}
+.card-element-movie{
+    margin: 20px;
+}
+.custom-width{
+    width: 66.66%;
+}
+.custom-grid-flex{
+    display:flex;
+    
+}
+footer.page-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #131430;
+    color: #fff;
+}
+.FooterConstainer-styles.container-fluid {
+    padding: 20px;
+}
+footer a:hover {
+    text-decoration: underline !important;
+}
+nav.navbar.navbar-expand-lg.navbar-light.bg-light {
+    position: sticky;
+}
+.custom-nav-wrapper.navbar-nav.navbar-nav-scroll {
+    max-width: 33.33% !important;
+}
+@media(max-width: 600px) {
+    .custom-nav-wrapper.navbar-nav.navbar-nav-scroll {
+        max-width: 100% !important;
+    }
+}
+.justify-content-start.flex-grow-1.pe-3.custom-nav-wrapper.navbar-nav.navbar-nav-scroll {
+    max-height: 200px;
+}
+button.btn.btn-outline-success {
+    color: #000;
+    background-color: #fff;
+    border-color: #131530;
+}
+.btn-check:checked + .btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check) + .btn:active {
+    color: #fff;
+    background-color: #131530;
+    border-color: #131530;
+}
+button.btn.btn-outline-success:hover {
+    color: #fff;
+    background-color: #131530;
+    border-color: #131530;
+}
+.mask {
+    height: -webkit-fill-available;
+}
+.account-icon-style{
+    height: 22px;
+    width: 22px;
+}
