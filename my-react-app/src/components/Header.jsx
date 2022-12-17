@@ -11,7 +11,7 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 const Header = () => ( 
     <>
         
-        <Navbar bg="light" expand="lg">
+        <Navbar sticky="top" bg="light" expand="lg">
             <Container fluid>
                 <Navbar.Toggle aria-controls="navbarScroll" />
                 <Navbar.Collapse className="Nav-items-container" id="navbarScroll">
