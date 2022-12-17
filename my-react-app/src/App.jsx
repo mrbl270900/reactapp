@@ -6,6 +6,7 @@ import Main from "./pages/home";
 import { UsersLayout, UsersList, User, NewUser, loadUsers } from "./pages/users";
 import { MoviesLayout, MoviesList, Movie } from "./pages/movies";
 import { PersonsLayout, PersonsList, Person } from "./pages/persons";
+import { SearchLayout, SearchList } from "./pages/search";
 import Error from "./pages/error";
 import Footer from "./components/Footer.jsx";
 // bootstrap imports
@@ -30,6 +31,9 @@ const App = () =>
             <Route path="/persons" element={<PersonsLayout />} >
                 <Route index element={<PersonsList />} />
                 <Route path="/persons/:uid" element={<Person />} />
+            </Route>
+            <Route path="/search" element={<SearchLayout />} >
+                <Route index element={<SearchList />} />
             </Route>
             <Route path="*" element={<Error />} />
         </Routes>
