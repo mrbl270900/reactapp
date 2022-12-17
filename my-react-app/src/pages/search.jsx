@@ -93,7 +93,7 @@ function SearchList() {
                         }
                         </Row>
                     </Container>
-    }
+                    }
            </div >
 
         );

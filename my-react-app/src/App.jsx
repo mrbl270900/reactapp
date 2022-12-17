@@ -3,7 +3,7 @@ import './App.css';
 //page imports
 import Header from "./components/Header.jsx";
 import Main from "./pages/home";
-import { UsersLayout, UsersList, User, NewUser, loadUsers } from "./pages/users";
+import { UsersLayout, UsersList, User, NewUser, LoginUser } from "./pages/users";
 import { MoviesLayout, MoviesList, Movie } from "./pages/movies";
 import { PersonsLayout, PersonsList, Person } from "./pages/persons";
 import { SearchLayout, SearchList } from "./pages/search";
@@ -21,8 +21,9 @@ const App = () =>
             <Route path="/" element={<Main />} />
             <Route path="/users" element={<UsersLayout />}>
                 <Route index element={<UsersList />} />
-                <Route path="/users/:uid" element={<User />} />
+                <Route path="/users/:userid" element={<User />} />
                 <Route path="/users/new" element={<NewUser />} />
+                <Route path="/users/login" element={<LoginUser />} />
             </Route>
             <Route path="/movies" element={<MoviesLayout />} >
                 <Route path="/movies/:page/:pagesize" index element={<MoviesList />} />

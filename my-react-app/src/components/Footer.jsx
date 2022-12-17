@@ -17,8 +17,8 @@ const Footer = () =>
                             <Col>
                                 <h2>Maybe some links?</h2>
                                 <NavLink className="nav-link" to="/">Home</NavLink>
-                                <NavLink className="nav-link" to="/movies">Movies</NavLink>
-                                <NavLink className="nav-link" to="/persons">Persons</NavLink>
+                                <NavLink className="nav-link" to="/movies/0/25">Movies</NavLink>
+                                <NavLink className="nav-link" to="/persons/0/25">Persons</NavLink>
                             </Col>
                         </Row>
                     </Container>

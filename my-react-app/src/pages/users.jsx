@@ -1,6 +1,10 @@
 import {
-    Routes, Route, Link, NavLink, useParams, Outlet
+    Routes, Route, Link, NavLink, useParams, Outlet, useNavigate
 } from "react-router-dom";
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'universal-cookie';
 
 
 const UsersLayout = () => {
@@ -41,23 +45,139 @@ const UsersList = () => {
 
 
 const User = () => {
-    const { uid } = useParams();
+    const { userid } = useParams();
     return (
         <div>
-            <p>This is user #{uid}.</p>
+            <p>This is user #{userid}.</p>
         </div>
     );
 }
 
-const NewUser = () =>
+function NewUser() {
+    const [status, setStatus] = useState("idle");
+    const navigate = useNavigate();
+
+        async function CreateUser(event) {
+            event.preventDefault();
+            console.log(event.target[0].value)
+            console.log(event.target[1].value)
+            console.log(event.target[2].value)
+            console.log("submit");
+            let userdata = {
+                "Name": event.target[0].value,
+                "UserName": event.target[1].value,
+                "Password": event.target[2].value,
+            }
+            try {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userdata)
+                };
+
+                const res = await fetch("http://localhost:5001/api/users/register", requestOptions)
+                setStatus("done");
+            } catch (e) {
+                setStatus("an error")
+            }
+    }
+
+    return(
     <div>
         <p>Create a new user</p>
-    </div>;
+            <Form onSubmit={CreateUser} className="d-flex">
+                <Form.Control
+                    type="Name"
+                    placeholder="Name"
+                    className="me-3"
+                    aria-label="Name"
+                />
+            <Form.Control
+                type="Username"
+                    placeholder="Username"
+                className="me-3"
+                    aria-label="Username"
+                />
+                <Form.Control
+                    type="Password"
+                    placeholder="Password"
+                    className="me-3"
+                    aria-label="Password"
+                />
+            <Button type="submit" variant="outline-success">Make User</Button>
+            </Form>
+            {(status === "done") &&
+                <h1>
+                    {console.log("du er registret")}
+                    Du er nu registeret
+                    {navigate("/users/login")}
+                    {navigate(0)}
+                </h1>
+            }
+    </div>);
+}
+
+function LoginUser() {
+    const [items, setItems] = useState([]);
+    const [status, setStatus] = useState("idle");
+    const cookies = new Cookies();
+
+    async function Login(event) {
+        event.preventDefault();
+        console.log(event.target[0].value)
+        console.log(event.target[1].value)
+        console.log("submit");
+        let userdata = {
+            "Username": event.target[0].value,
+            "Password": event.target[1].value,
+        }
+        try {
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userdata)
+            };
+
+            const res = await fetch("http://localhost:5001/api/users/login", requestOptions)
+            const json = await res.json();
+            setItems(json);
+            setStatus("done");
+        } catch (e) {
+            setStatus("an error")
+        }
+    }
+
+    return (
+        <div>
+            <p>Create a new user</p>
+            <Form onSubmit={Login} className="d-flex">
+                <Form.Control
+                    type="Username"
+                    placeholder="Username"
+                    className="me-3"
+                    aria-label="Username"
+                />
+                <Form.Control
+                    type="Password"
+                    placeholder="Password"
+                    className="me-3"
+                    aria-label="Password"
+                />
+                <Button type="submit" variant="outline-success">Log In</Button>
+            </Form>
+            {(status === "done") &&
+                <h1>
+                    {console.log(items.token)}
+                    {cookies.set("Token", items.token)}
+                    {console.log(cookies.get("Token"))}
+                </h1>
+            }
+        </div>);
+}
 
 
-
-
-
-
-
-export { UsersLayout, UsersList, User, NewUser };
+export { UsersLayout, UsersList, User, NewUser, LoginUser };
