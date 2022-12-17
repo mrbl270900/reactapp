@@ -25,14 +25,14 @@ const App = () =>
                 <Route path="/users/new" element={<NewUser />} />
             </Route>
             <Route path="/movies" element={<MoviesLayout />} >
-                <Route index element={<MoviesList />} />
-                <Route path="/movies/:uid" element={<Movie />} />
+                <Route path="/movies/:page/:pagesize" index element={<MoviesList />} />
+                <Route path="/movies/:tconst" element={<Movie />} />
             </Route>
             <Route path="/persons" element={<PersonsLayout />} >
-                <Route index element={<PersonsList />} />
-                <Route path="/persons/:uid" element={<Person />} />
+                <Route path="/persons/:page/:pagesize" index element={<PersonsList />} />
+                <Route path="/persons/:nconst" element={<Person />} />
             </Route>
-            <Route path="/search" element={<SearchLayout />} >
+            <Route path="/search/:input" element={<SearchLayout />} >
                 <Route index element={<SearchList />} />
             </Route>
             <Route path="*" element={<Error />} />

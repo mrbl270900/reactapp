@@ -45,19 +45,21 @@ const SearchLayout = () => {
 
 
 
-function SearchList(props) {
-
+function SearchList() {
+    const { input } = useParams();
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
 
-    async function loadSearch(input) {
+    async function loadSearch(string) {
+        const myArray = string.split(" ");
+
         try {
             const requestOptions = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(["mads", "mikkelsen"])
+                body: JSON.stringify(myArray)
             };
 
             const res = await fetch("http://localhost:5001/api/movies/bestmatch", requestOptions)
@@ -69,7 +71,7 @@ function SearchList(props) {
         }
     }
 
-    useEffect(() => { loadSearch() }, []);
+    useEffect(() => { loadSearch(input) }, []);
 
 
     return (

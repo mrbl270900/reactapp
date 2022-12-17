@@ -46,14 +46,15 @@ const MoviesLayout = () => {
 
 
 function MoviesList() {
-
+    const { page } = useParams();
+    const { pagesize } = useParams();
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
 
         
     async function loadMovies() {
         try {
-            const res = await fetch("http://localhost:5001/api/movies/")
+            const res = await fetch("http://localhost:5001/api/movies/" + page + "/" + pagesize)
             const json = await res.json();
             setItems(json);
             setStatus("done");
@@ -89,81 +90,34 @@ function MoviesList() {
     );
 }
 
+function Movie() {
+        const { tconst } = useParams();
+        const [items, setItems] = useState([]);
+        const [status, setStatus] = useState("idle");
 
 
-
-
-    /*const [movies, setMovies] = useState([]);
-    useEffect(() => {
-        fetch('http://localhost:5001/api/movies')
-            .then((res) => res.json())
-            .then((movieData) => {
-                setMovies(movieData);
-            });
-    }, []);
-
-    return <div> {movies?.map((movies) => {
-        return <li className="" key={movies.tconst}> {movies.tconst} </li>
-    })}</div>*/
-   
-
-
-
-/*function MovieItemGrid() {
-    const [movies, setMovies] = useState([]);
-    useEffect(() => {
-        fetch('http://localhost:5001/api/movies')
-            .then((res) => res.json())
-            .then((movieData) => {
-                setMovies(movieData);
-            });
-    }, []);
-
-    /*<Route exact path='/'>
-        <Home movies={movies} />
-    </Route>*/ // this code is for a page
-    /*------------above code should maybe be placed in app.jsx----------------------------------------------*/
-
-    //}
-
-  /*  function Moviecontainer({ movies }) {
-        const movieArr = movies.map((movie) => {
-            return <movieCard key={movie.tconst} movie={movie} />
-        });
-        return <div id="image-field"> {movieArr} </div>
-
-    } // remember to export this*/
-
-   /* function MovieCard({ movie }) {
-        function displayMovie() {
+        async function loadMovies() {
+            try {
+                const res = await fetch("http://localhost:5001/api/movies/" + tconst)
+                const json = await res.json();
+                setItems(json);
+                setStatus("done");
+            } catch (e) {
+                setStatus("an error")
+            }
         }
 
-        <div id="image-container" onClick={displayMovie}>
-            <div id="card-image">
-                <img
-                    className="movieCard-image"
-                    src={movie.omdB_Datasets.poster}
-                    alt="Movie poster"
-                />
-            </div>
-            <h2 id="tittles">{movie.title}</h2>
-        </div>
+        useEffect(() => { loadMovies() }, []);
 
-    } // data might be different - movie.title - might be called something else
-
-*/
-    const Movie = () => {
-        const { tconst } = useParams();
         return (
-            <Container fluid>
-                <Row>
-                    <Col>
-                        <div>
-                            <p>This is Movie #{tconst}.</p>
-                        </div>
-                    </Col>
-                </Row>
-            </Container>
+            <div><h1> Pleses wait some time.... </h1>
+                {(status === "done") &&
+                    <Container className="custom-grid-flex">
+                        {console.log(items)}
+                        <h1>{items.primarytitle}</h1>
+                    </Container>
+                }
+            </div >
         );
     }
 
