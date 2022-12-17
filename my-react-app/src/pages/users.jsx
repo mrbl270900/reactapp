@@ -44,11 +44,32 @@ const UsersList = () => {
 }
 
 
-const User = () => {
-    const { userid } = useParams();
+function User() {
+    const [items, setItems] = useState([]);
+    const [status, setStatus] = useState("idle");
+    const cookies = new Cookies();
+
+    async function GetUser() {
+        try {
+            const requestOptions = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': cookies.get("Token")
+                }
+            };
+
+            const res = await fetch("http://localhost:5001/api/users/" + cookies.get("UserId"), requestOptions)
+            const json = await res.json();
+            setItems(json);
+            setStatus("done");
+        } catch (e) {
+            setStatus("an error")
+        }
+    }
     return (
         <div>
-            <p>This is user #{userid}.</p>
+            <p>This is user {items.userid}</p>
         </div>
     );
 }
@@ -59,9 +80,9 @@ function NewUser() {
 
         async function CreateUser(event) {
             event.preventDefault();
-            console.log(event.target[0].value)
-            console.log(event.target[1].value)
-            console.log(event.target[2].value)
+            console.log(event.target[0].value);
+            console.log(event.target[1].value);
+            console.log(event.target[2].value);
             console.log("submit");
             let userdata = {
                 "Name": event.target[0].value,
@@ -173,7 +194,9 @@ function LoginUser() {
                 <h1>
                     {console.log(items.token)}
                     {cookies.set("Token", items.token)}
+                    {cookies.set("UserId", items.userid)}
                     {console.log(cookies.get("Token"))}
+                    {console.log(cookies.get("UserId"))}
                 </h1>
             }
         </div>);

@@ -20,7 +20,7 @@ const App = () =>
         <Routes>
             <Route path="/" element={<Main />} />
             <Route path="/users" element={<UsersLayout />}>
-                <Route index element={<UsersList />} />
+                <Route index element={<User />} />
                 <Route path="/users/:userid" element={<User />} />
                 <Route path="/users/new" element={<NewUser />} />
                 <Route path="/users/login" element={<LoginUser />} />
