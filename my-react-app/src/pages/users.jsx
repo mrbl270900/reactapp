@@ -55,7 +55,7 @@ function User() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': cookies.get("Token")
+                    'Authorization': "Bearer " + cookies.get("Token")
                 }
             };
 
@@ -67,9 +67,18 @@ function User() {
             setStatus("an error")
         }
     }
+
+    useEffect(() => { GetUser() }, []);
+
     return (
         <div>
-            <p>This is user {items.userid}</p>
+            <h1>Waiting on Api</h1>
+            {(status === "done") &&  
+            <div>
+            {console.log(items)}
+                    <p>This is user {items.userid}</p>
+                    </div>
+            }
         </div>
     );
 }
