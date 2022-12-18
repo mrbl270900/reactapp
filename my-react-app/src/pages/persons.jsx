@@ -163,12 +163,13 @@ function Person() {
         console.log(requestOptions);
         console.log(data);
         try {
-            const res = await fetch("http://localhost:5001/api/users/create_person_bookmark", requestOptions);
+            const res = await fetch("http://localhost:5001/api/users/create_name_bookmark", requestOptions);
             setStatus("done");
         } catch (e) {
             setStatus("an error")
         }
     }
+
     async function loadPersons() {
         try {
             const res = await fetch("http://localhost:5001/api/person/" + nconst)

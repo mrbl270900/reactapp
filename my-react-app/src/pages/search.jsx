@@ -1,5 +1,5 @@
 import {
-    Routes, Route, Link, NavLink, useParams, Outlet
+    Routes, Route, Link, NavLink, useParams, Outlet, useNavigate
 } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -30,10 +30,6 @@ const SearchLayout = () => {
                 <Row>
                     <Col>
                         <div>
-
-                            <NavLink className="btn" to="/movies">Movies</NavLink>
-                            <NavLink className="btn" to="/movies/1">Movie 1</NavLink>
-                            <NavLink className="btn" to="/movies/2">Movie 2</NavLink>
                             <Outlet /> { /* subpages will appear here */}
                         </div>
                     </Col >
@@ -51,6 +47,7 @@ function SearchList() {
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
     const [cookies, setCookie] = useCookies(['token', 'user_id']);
+    const navigate = useNavigate();
 
     async function loadSearch(string) {
         const myArray = string.split(" ");
@@ -90,6 +87,38 @@ function SearchList() {
         }
     }
 
+    async function userClickedMovie(tconst) {
+        let data = {
+            "userid": cookies.user_id,
+            "tconst": tconst
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + cookies.token
+            },
+            body: JSON.stringify(data)
+        };
+        console.log(requestOptions);
+        console.log(data);
+        try {
+            const res = await fetch("http://localhost:5001/api/users/create_title_search", requestOptions);
+        } catch (e) {
+            setStatus("an error")
+        }
+    }
+
+    function goToMovie(tconst) {
+        {
+            (cookies.user_id != undefined) &&
+                userClickedMovie(tconst);
+        }
+        navigate("/movies/" + tconst);
+        navigate(0);
+    }
+
     useEffect(() => { loadSearch(input) }, []);
 
 
@@ -103,7 +132,7 @@ function SearchList() {
                             items.$values.map((item) => (
 
                             <Col>
-                                    <Card className="card-element-movie" key={item.tconst} style={{ width: '18rem' }} >
+                                    <Card onClick={() => goToMovie(item.tconst)} className="card-element-movie" key={item.tconst} style={{ width: '18rem' }} >
                                         <Card.Title style={{ padding: '20px' }}>{item.tconst}</Card.Title>
                                 
                                 </Card>
