@@ -43,7 +43,7 @@ const UsersList = () => {
 function User() {
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
-    const [cookies, setCookie] = useCookies(['token', 'user_id'])
+    const [cookies, setCookie, removeCookie] = useCookies(['token', 'user_id'])
     const navigate = useNavigate();
 
     async function GetUser() {
@@ -65,6 +65,15 @@ function User() {
         }
     }
 
+    function LogOut(e) {
+        e.preventDefault();
+        console.log("hej");
+        removeCookie("token");
+        removeCookie("user_id");
+        { navigate("/users/login") }
+        { navigate(0) }
+    }
+
     useEffect(() => { GetUser() }, []);
 
     return (
@@ -74,7 +83,10 @@ function User() {
             <div>
             {console.log(items)}
                     <p>This is user {items.userid}</p>
-                    </div>
+                    <Form onSubmit={LogOut}>
+                        <Button type="submit" variant="outline-success">Log In</Button>
+                    </Form>
+                </div>
             }
             {(status === "an error") &&
                 <div>
