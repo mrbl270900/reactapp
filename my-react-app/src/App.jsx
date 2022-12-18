@@ -13,7 +13,8 @@ import Footer from "./components/Footer.jsx";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 
-const App = () => 
+function App() {
+    return(
     <>
         <Header />
 
@@ -39,9 +40,10 @@ const App = () =>
             <Route path="*" element={<Error />} />
         </Routes>
 
-        <Footer/>
+        <Footer />
 
-    </>;
+    </>);
+}
 
 
 export default App;

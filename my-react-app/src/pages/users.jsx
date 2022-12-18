@@ -4,7 +4,7 @@ import {
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import React, { useState, useEffect } from 'react';
-import Cookies from 'universal-cookie';
+import { useCookies } from 'react-cookie'
 
 
 const UsersLayout = () => {
@@ -25,11 +25,7 @@ const UsersLayout = () => {
             </div>
             </div>
         <div>
-            
-            <NavLink className="btn" to="/users">index</NavLink>
-            <NavLink className="btn" to="/users/1">User 1</NavLink>
-            <NavLink className="btn" to="/users/2">User 2</NavLink>
-            <NavLink className="btn" to="/users/new">Create new user</NavLink>
+
             <Outlet /> { /* subpages will appear here */}
             </div>
             </>
@@ -47,7 +43,8 @@ const UsersList = () => {
 function User() {
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
-    const cookies = new Cookies();
+    const [cookies, setCookie] = useCookies(['token', 'user_id'])
+    const navigate = useNavigate();
 
     async function GetUser() {
         try {
@@ -55,11 +52,11 @@ function User() {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': "Bearer " + cookies.get("Token")
+                    'Authorization': "Bearer " + cookies.token
                 }
             };
 
-            const res = await fetch("http://localhost:5001/api/users/" + cookies.get("UserId"), requestOptions)
+            const res = await fetch("http://localhost:5001/api/users/" + cookies.user_id, requestOptions)
             const json = await res.json();
             setItems(json);
             setStatus("done");
@@ -79,12 +76,20 @@ function User() {
                     <p>This is user {items.userid}</p>
                     </div>
             }
+            {(status === "an error") &&
+                <div>
+                    {navigate("/users/login")}
+                    {navigate(0)}
+                </div>
+            }
         </div>
     );
 }
 
 function NewUser() {
+    const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
+    const [cookies, setCookie] = useCookies(['token', 'user_id']);
     const navigate = useNavigate();
 
         async function CreateUser(event) {
@@ -108,15 +113,41 @@ function NewUser() {
                 };
 
                 const res = await fetch("http://localhost:5001/api/users/register", requestOptions)
-                setStatus("done");
+                try { Login(event); } catch (e) {
+                    setStatus("an error")
+                }
             } catch (e) {
                 setStatus("an error")
             }
     }
 
+    async function Login(event) {
+        let userdata = {
+            "Username": event.target[1].value,
+            "Password": event.target[2].value,
+        }
+        try {
+            const requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(userdata)
+            };
+
+            const res = await fetch("http://localhost:5001/api/users/login", requestOptions)
+            const json = await res.json();
+            setItems(json);
+            setStatus("done");
+        } catch (e) {
+            setStatus("an error")
+        }
+    }
+
     return(
     <div>
-        <p>Create a new user</p>
+            <p>Create a new user</p>
+            <NavLink className="btn" to="/users/login">Login User</NavLink>
             <Form onSubmit={CreateUser} className="d-flex">
                 <Form.Control
                     type="Name"
@@ -140,9 +171,12 @@ function NewUser() {
             </Form>
             {(status === "done") &&
                 <h1>
-                    {console.log("du er registret")}
-                    Du er nu registeret
-                    {navigate("/users/login")}
+                    {console.log(items.token)}
+                    {setCookie("token", items.token, { path: '/' })}
+                    {setCookie("user_id", items.userid, { path: '/' })}
+                    {console.log(cookies.token)}
+                    {console.log(cookies.user_id)}
+                    {navigate("/users")}
                     {navigate(0)}
                 </h1>
             }
@@ -152,7 +186,9 @@ function NewUser() {
 function LoginUser() {
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
-    const cookies = new Cookies();
+    const [cookies, setCookie] = useCookies(['token', 'user_id']);
+    const navigate = useNavigate();
+
 
     async function Login(event) {
         event.preventDefault();
@@ -183,7 +219,8 @@ function LoginUser() {
 
     return (
         <div>
-            <p>Create a new user</p>
+            <p>Log In</p>
+            <NavLink className="btn" to="/users/new">Create User</NavLink>
             <Form onSubmit={Login} className="d-flex">
                 <Form.Control
                     type="Username"
@@ -202,10 +239,12 @@ function LoginUser() {
             {(status === "done") &&
                 <h1>
                     {console.log(items.token)}
-                    {cookies.set("Token", items.token)}
-                    {cookies.set("UserId", items.userid)}
-                    {console.log(cookies.get("Token"))}
-                    {console.log(cookies.get("UserId"))}
+                    {setCookie("token", items.token, { path: '/'})}
+                    {setCookie("user_id", items.userid, { path: '/'})}
+                    {console.log(cookies.token)}
+                    {console.log(cookies.user_id)}
+                    {navigate("/users")}
+                    {navigate(0)}
                 </h1>
             }
         </div>);

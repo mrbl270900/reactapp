@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
+import { useCookies } from 'react-cookie'
 
 
 const SearchLayout = () => {
@@ -49,6 +50,7 @@ function SearchList() {
     const { input } = useParams();
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
+    const [cookies, setCookie] = useCookies(['token', 'user_id']);
 
     async function loadSearch(string) {
         const myArray = string.split(" ");
@@ -61,11 +63,28 @@ function SearchList() {
                 },
                 body: JSON.stringify(myArray)
             };
+            let userdata = {
+                "userid": cookies.user_id,
+                "tconst": string
+            }
+            const requestOptions2 = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': "Bearer " + cookies.token
+                },
+                body: JSON.stringify(userdata)
+            };
 
             const res = await fetch("http://localhost:5001/api/movies/bestmatch", requestOptions)
             const json = await res.json();
             setItems(json);
             setStatus("done");
+            try {
+                await fetch("http://localhost:5001/api/users/create_search_word", requestOptions2)
+            } catch (e) {
+                setStatus("done")
+            }
         } catch (e) {
             setStatus("an error")
         }

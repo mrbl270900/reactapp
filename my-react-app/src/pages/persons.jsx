@@ -1,11 +1,12 @@
 import {
-    Routes, Route, Link, NavLink, useParams, Outlet
+    Routes, Route, Link, NavLink, useParams, Outlet, useNavigate
 } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
+import { useCookies } from 'react-cookie'
 
 
 const PersonsLayout = () => {
@@ -29,10 +30,6 @@ const PersonsLayout = () => {
                 <Row>
                     <Col>
                         <div>
-
-                            <NavLink className="btn" to="/persons">Persons</NavLink>
-                            <NavLink className="btn" to="/persons/1">Person 1</NavLink>
-                            <NavLink className="btn" to="/persons/2">Person 2</NavLink>
                             <Outlet /> { /* subpages will appear here */}
                         </div>
                     </Col >
@@ -49,9 +46,24 @@ function PersonsList() {
     const { page } = useParams();
 const { pagesize } = useParams();
 const [items, setItems] = useState([]);
-const [status, setStatus] = useState("idle");
+    const [status, setStatus] = useState("idle");
+    const [cookies, setCookie] = useCookies(['token', 'user_id'])
+    const navigate = useNavigate();
+    let backpage = Number(page) - 1;
+    let nextPage = Number(page) + 1;
+    const bacOnePage = "/persons/" + backpage + "/25"
+    const nextPageOne = "/persons/" + nextPage + "/25"
 
+    function changePage(input) {
+        if (input === "back") {
+            navigate(bacOnePage);
+            navigate(0);
+        } else {
+            navigate(nextPageOne);
+            navigate(0);
+        }
 
+    }
 async function loadMovies() {
     try {
         const res = await fetch("http://localhost:5001/api/person/" + page + "/" + pagesize)
@@ -61,21 +73,56 @@ async function loadMovies() {
     } catch (e) {
         setStatus("an error")
     }
-}
+    }
+
+    async function userClickedPerson(nconst) {
+        let data = {
+            "userid": cookies.user_id,
+            "tconst": nconst
+        }
+
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + cookies.token
+            },
+            body: JSON.stringify(data)
+        };
+        console.log(requestOptions);
+        console.log(data);
+        try {
+            const res = await fetch("http://localhost:5001/api/users/create_person_search", requestOptions);
+        } catch (e) {
+            setStatus("an error")
+        }
+    }
+
+    function goToPerson(nconst) {
+        {
+            (cookies.user_id != undefined) &&
+                userClickedPerson(nconst);
+        }
+        navigate("/persons/" + nconst);
+        navigate(0);
+    }
 
 useEffect(() => { loadMovies() }, []);
 
 return (
     <div><h1> Pleses wait some time.... </h1>
+        <button onClick={() => changePage("back")}>forige side</button>
+        <button onClick={() => changePage("next")}>naeste side</button>
         {(status === "done") &&
             <Container className="custom-grid-flex">
+                {console.log(items)}
                 <Row xs={1} md={3} className="custom-width g-4">
                     {
 
                         items.$values.map((item) => (
 
                             <Col>
-                                <Card className="card-element-movie" key={item.url} style={{ width: '18rem' }} >
+                                <Card onClick={() => goToPerson(item.url.slice(-9))} className="card-element-movie" key={item.url} style={{ width: '18rem' }} >
                                     <Card.Title style={{ padding: '20px' }}>{item.primaryname}</Card.Title>
                                 </Card>
                             </Col>
@@ -91,12 +138,38 @@ return (
 
 
 function Person() {
+    const [cookies, setCookie] = useCookies(['token', 'user_id'])
     const { nconst } = useParams();
     const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
+    const [coPlayers, setCoPlayers] = useState([]);
+    const [CoPlayerStatus, setCoPlayerStatus] = useState("idle");
 
+    async function bookmarkPerson(event) {
+        event.preventDefault();
+        let data = {
+            "userid": cookies.user_id,
+            "tconst": nconst
+        }
 
-    async function loadMovies() {
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Bearer " + cookies.token
+            },
+            body: JSON.stringify(data)
+        };
+        console.log(requestOptions);
+        console.log(data);
+        try {
+            const res = await fetch("http://localhost:5001/api/users/create_person_bookmark", requestOptions);
+            setStatus("done");
+        } catch (e) {
+            setStatus("an error")
+        }
+    }
+    async function loadPersons() {
         try {
             const res = await fetch("http://localhost:5001/api/person/" + nconst)
             const json = await res.json();
@@ -107,14 +180,32 @@ function Person() {
         }
     }
 
-    useEffect(() => { loadMovies() }, []);
+    async function loadCoPlayers() { // ikke anvendt
+        let string = items.primaryname
+        let newStr = string.replace(" ", "%20");
+        try {
+            const res2 = await fetch("http://localhost:5001/api/person/" + newStr + "/findcoplayers");
+            const json2 = await res2.json();
+            setCoPlayers(json2);
+            setCoPlayerStatus("coplayers loaded");
+        } catch (e) {
+            setCoPlayerStatus("an error")
+        }
+    }
+
+    useEffect(() => { loadPersons() }, []);
 
     return (
         <div><h1> Pleses wait some time.... </h1>
             {(status === "done") &&
                 <Container className="custom-grid-flex">
-                    {console.log(items)}
                     <h1>{items.primaryname}</h1>
+                    {console.log(items)}
+                    {(cookies.user_id != undefined) &&
+                        <form onSubmit={bookmarkPerson}>
+                            <button type="submit" variant="outline-success" >bookmark</button>
+                        </form>
+                    }
                 </Container>
             }
         </div >
