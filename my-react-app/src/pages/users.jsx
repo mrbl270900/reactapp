@@ -67,9 +67,8 @@ function User() {
 
     function LogOut(e) {
         e.preventDefault();
-        console.log("hej");
-        removeCookie("token");
-        removeCookie("user_id");
+        removeCookie("token", { path: '/' });
+        removeCookie("user_id", { path: '/' });
         { navigate("/users/login") }
         { navigate(0) }
     }
@@ -84,7 +83,7 @@ function User() {
             {console.log(items)}
                     <p>This is user {items.userid}</p>
                     <Form onSubmit={LogOut}>
-                        <Button type="submit" variant="outline-success">Log In</Button>
+                        <Button type="submit" variant="outline-success">Log Out</Button>
                     </Form>
                 </div>
             }

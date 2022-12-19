@@ -234,7 +234,7 @@ function Movie() {
                                     <button type="submit" variant="outline-success" >bookmark</button>
                                 </form>
                                 <form onSubmit={rateMovie}>
-                                    <Form.Control
+                                    <Form.Control   
                                         type="Rating"
                                         placeholder="Rating"
                                         className="me-3"
