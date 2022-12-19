@@ -19,7 +19,12 @@ function App() {
         <Header />
 
         <Routes>
-            <Route path="/" element={<Main />} />
+                <Route path="/" element={<Main />} >
+                    <Route index element={<MoviesList />}></Route>
+                    <Route path="/movies/:page/:pagesize" index element={<MoviesList />} />
+                    <Route path="/persons/:page/:pagesize" element={<PersonsList />} />
+            </Route>
+
             <Route path="/users" element={<UsersLayout />}>
                 <Route index element={<User />} />
                 <Route path="/users/:userid" element={<User />} />

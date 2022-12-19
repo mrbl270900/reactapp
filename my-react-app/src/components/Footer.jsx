@@ -26,6 +26,14 @@ const Footer = () =>
             </Row>
         </Container>
 
+        <NavLink onClick={goToTop} ><div>To the top</div></NavLink>
+
 </footer>
 
+const goToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+};
 export default Footer

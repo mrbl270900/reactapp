@@ -44,14 +44,15 @@
     color: var(--bs-navbar-brand-color);
     text-decoration: none;
 }
-.card-element-movie{
-    margin: 20px;
+.card-element-movie {
+    margin:20px;
 }
 .custom-width{
     width: 66.66%;
 }
 .custom-grid-flex{
     display:flex;
+    
     
 }
 footer.page-footer {
@@ -100,4 +101,7 @@ button.btn.btn-outline-success:hover {
 .account-icon-style{
     height: 22px;
     width: 22px;
+}
+.body-container{
+  
 }

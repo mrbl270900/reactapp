@@ -7,6 +7,7 @@ import Col from 'react-bootstrap/Col';
 import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import { useCookies } from 'react-cookie'
+import Pagination from 'react-bootstrap/Pagination';
 
 
 const PersonsLayout = () => {
@@ -26,15 +27,22 @@ const PersonsLayout = () => {
                     </div>
                 </div>
             </div>
-            <Container fluid>
-                <Row>
-                    <Col>
-                        <div>
-                            <Outlet /> { /* subpages will appear here */}
-                        </div>
-                    </Col >
-                </Row >
-            </Container >
+            <Container className="body-container">
+                <Container fluid>
+                    <Row>
+                        <Col>
+                            <div>
+                                <div className="custom-grid-flex justify-content-center">
+                                    <NavLink className="btn" to="/movies/0/25">Movies</NavLink>
+                                    <NavLink className="btn" to="/persons/0/25">Persons</NavLink>
+
+                                </div>
+                                <Outlet /> { /* subpages will appear here */}
+                            </div>
+                        </Col >
+                    </Row >
+                </Container >
+            </Container>
         </>
     )
 };
@@ -44,35 +52,45 @@ const PersonsLayout = () => {
 
 function PersonsList() {
     const { page } = useParams();
-const { pagesize } = useParams();
-const [items, setItems] = useState([]);
+    const { pagesize } = useParams();
+    const [items, setItems] = useState([]);
     const [status, setStatus] = useState("idle");
     const [cookies, setCookie] = useCookies(['token', 'user_id'])
     const navigate = useNavigate();
-    let backpage = Number(page) - 1;
-    let nextPage = Number(page) + 1;
-    const bacOnePage = "/persons/" + backpage + "/25"
-    const nextPageOne = "/persons/" + nextPage + "/25"
+    let pagPages = [];
+    const goToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    };
 
-    function changePage(input) {
-        if (input === "back") {
-            navigate(bacOnePage);
-            navigate(0);
-        } else {
-            navigate(nextPageOne);
-            navigate(0);
+    var minPage = Number(page) - 2;
+    var maxPage = Number(page) + 4;
+    if (minPage < 1) {
+        minPage = 1;
+        maxPage = 7;
+    }
+
+    for (let number = minPage; number <= maxPage; number++) {
+        var numbers = Number(number) - 1;
+        var pagnavlink = "/persons/" + numbers + "/25";
+        pagPages.push(
+            <NavLink onClick={goToTop} className="btn" to={pagnavlink}>
+                {number}
+            </NavLink>,
+        );
+    }
+
+    async function loadMovies() {
+        try {
+            const res = await fetch("http://localhost:5001/api/person/" + page + "/" + pagesize)
+            const json = await res.json();
+            setItems(json);
+            setStatus("done");
+        } catch (e) {
+            setStatus("an error")
         }
-
-    }
-async function loadMovies() {
-    try {
-        const res = await fetch("http://localhost:5001/api/person/" + page + "/" + pagesize)
-        const json = await res.json();
-        setItems(json);
-        setStatus("done");
-    } catch (e) {
-        setStatus("an error")
-    }
     }
 
     async function userClickedPerson(nconst) {
@@ -104,35 +122,40 @@ async function loadMovies() {
                 userClickedPerson(nconst);
         }
         navigate("/persons/" + nconst);
-        navigate(0);
     }
 
-useEffect(() => { loadMovies() }, []);
+    useEffect(() => { loadMovies() }, [page]);
 
-return (
-    <div><h1> Pleses wait some time.... </h1>
-        <button onClick={() => changePage("back")}>forige side</button>
-        <button onClick={() => changePage("next")}>naeste side</button>
-        {(status === "done") &&
-            <Container className="custom-grid-flex">
-                {console.log(items)}
-                <Row xs={1} md={3} className="custom-width g-4">
-                    {
+    return (
+        <div><h2 className="custom-grid-flex justify-content-center"> All persons </h2>
+            <div className="custom-grid-flex justify-content-center">
+                <Pagination linkAs={NavLink}
+                    total={100} limit={10} >{pagPages}</Pagination>
+            </div>
+            {(status === "done") &&
+                <Container className="custom-grid-flex justify-content-center">
+                    {console.log(items)}
+                    <Row xs={1} md={3} className="custom-width g-4">
+                        {
 
-                        items.$values.map((item) => (
+                            items.$values.map((item) => (
 
-                            <Col>
-                                <Card onClick={() => goToPerson(item.url.slice(-9))} className="card-element-movie" key={item.url} style={{ width: '18rem' }} >
-                                    <Card.Title style={{ padding: '20px' }}>{item.primaryname}</Card.Title>
-                                </Card>
-                            </Col>
-                        ))
-                    }
-                </Row>
-            </Container>
-        }
-    </div >
-);
+                                <Col>
+                                    <Card onClick={() => goToPerson(item.url.slice(-9))} className="card-element-movie" key={item.url} style={{ }} >
+                                        <Card.Title style={{ padding: '20px' }}>{item.primaryname}</Card.Title>
+                                    </Card>
+                                </Col>
+                            ))
+                        }
+                    </Row>
+                </Container>
+            }
+            <div className="custom-grid-flex justify-content-center">
+                <Pagination linkAs={NavLink}
+                    total={100} limit={10} >{pagPages}</Pagination>
+            </div>
+        </div >
+    );
 }
 
 
