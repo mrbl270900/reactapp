@@ -18,7 +18,6 @@ const Header = () => {
         console.log(event.target[0].value)
         console.log("submit");
         navigate("/search/" + event.target[0].value);
-        navigate(0);
     }
     return (
         <>

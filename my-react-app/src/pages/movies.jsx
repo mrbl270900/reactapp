@@ -186,6 +186,7 @@ function Movie() {
 
     async function bookmarkMovie(event) {
         event.preventDefault();
+
         let data = {
             "userid": cookies.user_id,
             "tconst": tconst

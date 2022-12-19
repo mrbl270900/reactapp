@@ -21,7 +21,6 @@ const UsersLayout = () => {
                         <div className='text-white'>
                             <h1 className='mb-3'>A Page for users</h1>
                             <h2 className='mb-3'>This is a page for users</h2>
-
                         </div>
                     </div>
                 </div>
@@ -33,13 +32,6 @@ const UsersLayout = () => {
         </>
     )
 };
-
-const UsersList = () => {
-    return (<div>
-        <p>List of all users</p>
-        <p>See for example <Link to="1">User 1</Link>.</p>
-    </div>)
-}
 
 
 function User() {
@@ -79,7 +71,7 @@ function User() {
 
         let data = {
             "userid": cookies.user_id,
-            "tconst": ""
+            "tconst": "tt12345678"
         }
 
         const requestOptions = {
@@ -90,16 +82,17 @@ function User() {
             },
             body: JSON.stringify(data)
         };
-        console.log(requestOptions);
-        console.log(data);
+
         try {
             const res = await fetch("http://localhost:5001/api/users/delete_user", requestOptions);
+            removeCookie("token", { path: '/' });
+            removeCookie("user_id", { path: '/' });
+            { navigate("/") }
         } catch (e) {
             setStatus("an error")
+            { navigate("/users") }
         }
-        removeCookie("token", { path: '/' });
-        removeCookie("user_id", { path: '/' });
-        { navigate("/") }
+
     }
 
     useEffect(() => { GetUser() }, [cookies]);
@@ -118,8 +111,8 @@ function User() {
                                 <Accordion.Body>
                                     <h3>Movie bookmarks: </h3>
                                     {items.users_bookmark_titles.$values.map((item) => (
-                                        
-                                        < li > <NavLink to={ "/movies/" + item.tconst } >{item.tconst}</NavLink></li>
+
+                                        < li > <NavLink to={"/movies/" + item.tconst} >{item.tconst}</NavLink></li>
 
                                     ))
                                     }
@@ -198,10 +191,6 @@ function NewUser() {
 
     async function CreateUser(event) {
         event.preventDefault();
-        console.log(event.target[0].value);
-        console.log(event.target[1].value);
-        console.log(event.target[2].value);
-        console.log("submit");
         let userdata = {
             "Name": event.target[0].value,
             "UserName": event.target[1].value,
@@ -217,7 +206,9 @@ function NewUser() {
             };
 
             const res = await fetch("http://localhost:5001/api/users/register", requestOptions)
-            try { Login(event); } catch (e) {
+            try {
+                Login(event);
+            } catch (e) {
                 setStatus("an error")
             }
         } catch (e) {
@@ -241,8 +232,12 @@ function NewUser() {
 
             const res = await fetch("http://localhost:5001/api/users/login", requestOptions)
             const json = await res.json();
-            setItems(json);
-            setStatus("done");
+            if (json.title === "Bad Request") {
+                setStatus("an error")
+            } else {
+                setItems(json);
+                setStatus("done");
+            }
         } catch (e) {
             setStatus("an error")
         }
@@ -280,13 +275,15 @@ function NewUser() {
             </Container>
             {(status === "done") &&
                 <h1>
-                    {console.log(items.token)}
                     {setCookie("token", items.token, { path: '/' })}
                     {setCookie("user_id", items.userid, { path: '/' })}
-                    {console.log(cookies.token)}
-                    {console.log(cookies.user_id)}
                     {navigate("/users")}
                 </h1>
+            }
+            {(status === "an error") &&
+                <h2 className="custom-grid-flex justify-content-center" style={{ color: "red" }}>
+                    Creating user failed try diffrent user name
+                </h2>
             }
         </div>);
 }
@@ -300,9 +297,6 @@ function LoginUser() {
 
     async function Login(event) {
         event.preventDefault();
-        console.log(event.target[0].value)
-        console.log(event.target[1].value)
-        console.log("submit");
         let userdata = {
             "Username": event.target[0].value,
             "Password": event.target[1].value,
@@ -319,7 +313,11 @@ function LoginUser() {
             const res = await fetch("http://localhost:5001/api/users/login", requestOptions)
             const json = await res.json();
             setItems(json);
-            setStatus("done");
+            if (json.title === "Bad Request") {
+                setStatus("an error")
+            } else {
+                setStatus("done");
+            }
         } catch (e) {
             setStatus("an error")
         }
@@ -350,16 +348,18 @@ function LoginUser() {
             </Container>
             {(status === "done") &&
                 <h1>
-                    {console.log(items.token)}
                     {setCookie("token", items.token, { path: '/' })}
                     {setCookie("user_id", items.userid, { path: '/' })}
-                    {console.log(cookies.token)}
-                    {console.log(cookies.user_id)}
                     {navigate("/users")}
                 </h1>
+            }
+            {(status === "an error") &&
+                <h2 className="custom-grid-flex justify-content-center" style={{ color: "red" }}>
+                    Log in failed try diffrent log in info
+                </h2>
             }
         </div>);
 }
 
 
-export { UsersLayout, UsersList, User, NewUser, LoginUser };
+export { UsersLayout, User, NewUser, LoginUser };

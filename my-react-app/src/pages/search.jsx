@@ -19,8 +19,8 @@ const SearchLayout = () => {
                 <div className='mask custom-inner' style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
                     <div className='d-flex justify-content-center align-items-center h-100'>
                         <div className='text-white'>
-                            <h1 className='mb-3'>Movies</h1>
-                            <h2 className='mb-3'>Have you checked out the movies yet?</h2>
+                            <h1 className='mb-3'>Search</h1>
+                            <h2 className='mb-3'>This is your search results</h2>
 
                         </div>
                     </div>
@@ -76,9 +76,9 @@ function SearchList() {
             const res = await fetch("http://localhost:5001/api/movies/bestmatch", requestOptions)
             const json = await res.json();
             setItems(json);
-            setStatus("done");
             try {
                 await fetch("http://localhost:5001/api/users/create_search_word", requestOptions2)
+                setStatus("done");
             } catch (e) {
                 setStatus("done")
             }
@@ -116,35 +116,34 @@ function SearchList() {
                 userClickedMovie(tconst);
         }
         navigate("/movies/" + tconst);
-        navigate(0);
     }
 
-    useEffect(() => { loadSearch(input) }, []);
+    useEffect(() => { loadSearch(input) }, [input]);
 
 
     return (
         <div><h1> Pleses wait some time.... </h1>
             {(status === "done") &&
-                    <Container className="custom-grid-flex">
+                <Container className="custom-grid-flex">
                     <Row xs={1} md={3} className="custom-width g-4">
                         {
-                            
+
                             items.$values.map((item) => (
 
-                            <Col>
+                                <Col>
                                     <Card onClick={() => goToMovie(item.tconst)} className="card-element-movie" key={item.tconst} style={{ width: '18rem' }} >
                                         <Card.Title style={{ padding: '20px' }}>{item.tconst}</Card.Title>
-                                
-                                </Card>
-                            </Col>
-                        ))
-                        }
-                        </Row>
-                    </Container>
-                    }
-           </div >
 
-        );
+                                    </Card>
+                                </Col>
+                            ))
+                        }
+                    </Row>
+                </Container>
+            }
+        </div >
+
+    );
 }
 
 export { SearchLayout, SearchList };

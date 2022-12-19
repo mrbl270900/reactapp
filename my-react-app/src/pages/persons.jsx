@@ -107,8 +107,6 @@ function PersonsList() {
             },
             body: JSON.stringify(data)
         };
-        console.log(requestOptions);
-        console.log(data);
         try {
             const res = await fetch("http://localhost:5001/api/users/create_person_search", requestOptions);
         } catch (e) {
@@ -134,7 +132,6 @@ function PersonsList() {
             </div>
             {(status === "done") &&
                 <Container className="custom-grid-flex justify-content-center">
-                    {console.log(items)}
                     <Row xs={1} md={3} className="custom-width g-4">
                         {
 
@@ -183,8 +180,6 @@ function Person() {
             },
             body: JSON.stringify(data)
         };
-        console.log(requestOptions);
-        console.log(data);
         try {
             const res = await fetch("http://localhost:5001/api/users/create_name_bookmark", requestOptions);
             setStatus("done");
@@ -224,7 +219,6 @@ function Person() {
             {(status === "done") &&
                 <Container className="custom-grid-flex">
                     <h1>{items.primaryname}</h1>
-                    {console.log(items)}
                     {(cookies.user_id != undefined) &&
                         <form onSubmit={bookmarkPerson}>
                             <button type="submit" variant="outline-success" >bookmark</button>
