@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import { useCookies } from 'react-cookie'
 import Pagination from 'react-bootstrap/Pagination';
+import ReactWordcloud from 'react-wordcloud';
 
 
 const PersonsLayout = () => {
@@ -82,7 +83,7 @@ function PersonsList() {
         );
     }
 
-    async function loadMovies() {
+    async function loadPersons() {
         try {
             const res = await fetch("http://localhost:5001/api/person/" + page + "/" + pagesize)
             const json = await res.json();
@@ -122,7 +123,7 @@ function PersonsList() {
         navigate("/persons/" + nconst);
     }
 
-    useEffect(() => { loadMovies() }, [page]);
+    useEffect(() => { loadPersons() }, [page]);
 
     return (
         <div><h2 className="custom-grid-flex justify-content-center"> All persons </h2>
@@ -138,7 +139,7 @@ function PersonsList() {
                             items.$values.map((item) => (
 
                                 <Col>
-                                    <Card onClick={() => goToPerson(item.url.slice(-9))} className="card-element-movie" key={item.url} style={{ }} >
+                                    <Card onClick={() => goToPerson(item.url.slice(-9))} className="card-element-movie" key={item.url} style={{}} >
                                         <Card.Title style={{ padding: '20px' }}>{item.primaryname}</Card.Title>
                                     </Card>
                                 </Col>
@@ -164,6 +165,8 @@ function Person() {
     const [status, setStatus] = useState("idle");
     const [coPlayers, setCoPlayers] = useState([]);
     const [CoPlayerStatus, setCoPlayerStatus] = useState("idle");
+    const [words, setWords] = useState([]);
+    const [cludeStatus, setCludeStatus] = useState("idle");
 
     async function bookmarkPerson(event) {
         event.preventDefault();
@@ -193,20 +196,32 @@ function Person() {
             const res = await fetch("http://localhost:5001/api/person/" + nconst)
             const json = await res.json();
             setItems(json);
-            setStatus("done");
+            setStatus("next");
         } catch (e) {
             setStatus("an error")
         }
     }
 
-    async function loadCoPlayers() { // ikke anvendt
-        let string = items.primaryname
-        let newStr = string.replace(" ", "%20");
+    async function loadWordsForClude() {
         try {
-            const res2 = await fetch("http://localhost:5001/api/person/" + newStr + "/findcoplayers");
+            console.log(items.primaryname);
+            const res4 = await fetch("http://localhost:5001/api/person/" + items.primaryname + "/person_words");
+            const json4 = await res4.json();
+            console.log(json4);
+            setWords(json4.$values);
+            console.log(words);
+            setCludeStatus("done")
+        } catch (e) {
+            setCludeStatus("an error")
+        }
+    }
+
+    async function loadCoPlayers() {
+        try {
+            const res2 = await fetch("http://localhost:5001/api/person/" + items.primaryname + "/findcoplayers");
             const json2 = await res2.json();
             setCoPlayers(json2);
-            setCoPlayerStatus("coplayers loaded");
+            setCoPlayerStatus("done");
         } catch (e) {
             setCoPlayerStatus("an error")
         }
@@ -214,17 +229,27 @@ function Person() {
 
     useEffect(() => { loadPersons() }, []);
 
+    if (status === "next") {
+        loadCoPlayers()
+        loadWordsForClude()
+        setStatus("done");
+
+    }
+
     return (
         <div><h1> Pleses wait some time.... </h1>
             {(status === "done") &&
-                <Container className="custom-grid-flex">
-                    <h1>{items.primaryname}</h1>
-                    {(cookies.user_id != undefined) &&
-                        <form onSubmit={bookmarkPerson}>
-                            <button type="submit" variant="outline-success" >bookmark</button>
-                        </form>
-                    }
-                </Container>
+                <div>
+                    <Container className="custom-grid-flex">
+                        <h1>{items.primaryname}</h1>
+                        {(cookies.user_id != undefined) &&
+                            <form onSubmit={bookmarkPerson}>
+                                <button type="submit" variant="outline-success" >bookmark</button>
+                            </form>
+                        }
+                    </Container>
+                    <ReactWordcloud words={words} />
+                </div>
             }
         </div >
     );
