@@ -102,6 +102,6 @@ button.btn.btn-outline-success:hover {
     height: 22px;
     width: 22px;
 }
-.body-container{
-  
+.btn-custom{
+    border-color: black !important;
 }

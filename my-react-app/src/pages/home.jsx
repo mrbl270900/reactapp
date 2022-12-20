@@ -31,8 +31,8 @@ const Main = () => {
                         <Col>
                             <div>
                                 <div className="custom-grid-flex justify-content-center">
-                                    <NavLink className="btn" to="/movies/0/25">Movies</NavLink>
-                                    <NavLink className="btn" to="/persons/0/25">Persons</NavLink>
+                                    <NavLink style={{ borderColor: "black", marginTop: "20px", marginRight: "10px" }} className="btn" to="/movies/0/25">Movies</NavLink>
+                                    <NavLink style={{ borderColor: "black", marginTop: "20px" }} className="btn" to="/persons/0/25">Persons</NavLink>
 
                                 </div>
                                 <Outlet /> { /* subpages will appear here */}

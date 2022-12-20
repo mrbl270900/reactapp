@@ -30,6 +30,11 @@ const SearchLayout = () => {
                 <Row>
                     <Col>
                         <div>
+                            <div className="custom-grid-flex justify-content-center">
+                                <NavLink style={{ borderColor: "black", marginTop: "20px", marginRight: "10px" }} className="btn" to="/movies/0/25">Movies</NavLink>
+                                <NavLink style={{ borderColor: "black", marginTop: "20px" }} className="btn" to="/persons/0/25">Persons</NavLink>
+                        </div>
+
                             <Outlet /> { /* subpages will appear here */}
                         </div>
                     </Col >
@@ -119,15 +124,16 @@ function SearchList() {
     }
 
     useEffect(() => { loadSearch(input) }, [input]);
-
+    console.log(items);
 
     return (
-        <div><h1> Pleses wait some time.... </h1>
+        <div>
+            <h2 className="custom-grid-flex justify-content-center">Seach results: </h2>
             {(status === "done") &&
-                <Container className="custom-grid-flex">
+                <Container className="custom-grid-flex justify-content-center">
+                   
                     <Row xs={1} md={3} className="custom-width g-4">
                         {
-
                             items.$values.map((item) => (
 
                                 <Col>

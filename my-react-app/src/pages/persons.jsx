@@ -9,6 +9,7 @@ import Card from 'react-bootstrap/Card';
 import { useCookies } from 'react-cookie'
 import Pagination from 'react-bootstrap/Pagination';
 import ReactWordcloud from 'react-wordcloud';
+import Accordion from 'react-bootstrap/Accordion';
 
 
 const PersonsLayout = () => {
@@ -34,8 +35,8 @@ const PersonsLayout = () => {
                         <Col>
                             <div>
                                 <div className="custom-grid-flex justify-content-center">
-                                    <NavLink className="btn" to="/movies/0/25">Movies</NavLink>
-                                    <NavLink className="btn" to="/persons/0/25">Persons</NavLink>
+                                    <NavLink style={{ borderColor: "black", marginTop: "20px", marginRight: "10px" }} className="btn" to="/movies/0/25">Movies</NavLink>
+                                    <NavLink style={{ borderColor: "black", marginTop: "20px" }} className="btn" to="/persons/0/25">Persons</NavLink>
 
                                 </div>
                                 <Outlet /> { /* subpages will appear here */}
@@ -167,6 +168,7 @@ function Person() {
     const [CoPlayerStatus, setCoPlayerStatus] = useState("idle");
     const [words, setWords] = useState([]);
     const [cludeStatus, setCludeStatus] = useState("idle");
+    var formatetwords = [];
 
     async function bookmarkPerson(event) {
         event.preventDefault();
@@ -204,12 +206,9 @@ function Person() {
 
     async function loadWordsForClude() {
         try {
-            console.log(items.primaryname);
             const res4 = await fetch("http://localhost:5001/api/person/" + items.primaryname + "/person_words");
             const json4 = await res4.json();
-            console.log(json4);
-            setWords(json4.$values);
-            console.log(words);
+            setWords(json4);
             setCludeStatus("done")
         } catch (e) {
             setCludeStatus("an error")
@@ -226,8 +225,14 @@ function Person() {
             setCoPlayerStatus("an error")
         }
     }
+    /* const words1 = [
+         { text: 'told', value: 64, },
+         { text: 'mistake', value: 11, },
+         { text: 'thought', value: 16, },
+         { text: 'bad', value: 17, }
+     ];*/
 
-    useEffect(() => { loadPersons() }, []);
+    useEffect(() => { loadPersons() }, [nconst]);
 
     if (status === "next") {
         loadCoPlayers()
@@ -235,20 +240,97 @@ function Person() {
         setStatus("done");
 
     }
+    console.log(words)
+    console.log(words.$values)
+    if (cludeStatus === "done") {
+        for (var i = 0; i < words.$values.length; i++) {
+            var wordFormat = { text: words.$values[i].word, value: words.$values[i].weight, };
+            formatetwords.push(wordFormat);
+        }
+    }
+    console.log(items)
+    const options = {
+
+        fontSizes: [15, 30],
+        rotations: 2,
+        rotationAngles: [90, 10],
+    };
+    const size = [300, 300];
 
     return (
-        <div><h1> Pleses wait some time.... </h1>
+        <div>
             {(status === "done") &&
                 <div>
-                    <Container className="custom-grid-flex">
-                        <h1>{items.primaryname}</h1>
+                    <Container className="">
+                        {<ReactWordcloud
+                            options={options}
+                            size={size}
+                            words={formatetwords}
+
+                        />}
+                        <h2>{items.primaryname}</h2>
+
+                        <Accordion defaultActiveKey="0">
+                            <Accordion.Item eventKey="0">
+                                <Accordion.Header>About {items.primaryname} </Accordion.Header>
+                                <Accordion.Body>
+                                    <li><strong>Name:</strong> {items.primaryname}</li>
+
+
+                                    <li><strong>Birth Year:</strong> {items.birthyear} {(items.birthyear === "") &&
+                                        <p>No data available</p>
+                                    }</li>
+                                    <li><strong>Death Year:</strong> {items.deathyear} {(items.deathyear === "") &&
+                                        <p>No data available</p>
+                                    }</li>
+                                    <li><strong>Profession:</strong> {items.primaryprofession}</li>
+
+                                    <li><strong>Rating:</strong> {items.name_rating} {(items.name_rating === null) &&
+                                        <p>No data available</p>
+                                    }</li>
+                                </Accordion.Body>
+                            </Accordion.Item>
+                            <Accordion.Item eventKey="1">
+                                <Accordion.Header>{items.primaryname} works with: </Accordion.Header>
+                                <Accordion.Body>
+                                    {(CoPlayerStatus === "done") &&
+                                        <div>
+                                            {coPlayers.$values.map((item) => (
+
+
+                                                <li><NavLink to={"/persons/" + item.nconst}>{item.name}</NavLink> Appered together {item.frequency} time{(item.frequency > 1) && 
+                                                "s"}</li>
+
+                                            ))}
+                                        </div>
+                                    }
+                                </Accordion.Body>
+                                </Accordion.Item>
+                            {/*<Accordion.Item eventKey="1">
+                                <Accordion.Header>{items.primaryname} appered in movies </Accordion.Header>
+                                <Accordion.Body>
+                                    {(status === "done") &&
+                                        <div>
+                                            {items.partof.$values.map((item) => (
+
+
+                                                <li><NavLink to={"/persons/" + item.movie_Title.tconst}>{item.movie_Title.primarytitle}</NavLink> and played {item.movie_Title.characters}</li>
+
+                                            ))}
+                                        </div>
+                                    }
+                                </Accordion.Body>
+                            </Accordion.Item>*/}
+                        </Accordion>
+
+
+
                         {(cookies.user_id != undefined) &&
                             <form onSubmit={bookmarkPerson}>
-                                <button type="submit" variant="outline-success" >bookmark</button>
+                                <button className="btn" type="submit" variant="outline-success" style={{ borderColor: "black", marginTop: "20px", marginBottom: "20px" }} >bookmark</button>
                             </form>
                         }
-                    </Container>
-                    <ReactWordcloud words={words} />
+                    </Container>                   
                 </div>
             }
         </div >

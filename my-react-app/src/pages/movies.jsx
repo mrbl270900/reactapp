@@ -9,6 +9,9 @@ import Form from 'react-bootstrap/Form';
 import Card from 'react-bootstrap/Card';
 import { useCookies } from 'react-cookie'
 import Pagination from 'react-bootstrap/Pagination';
+import Figure from 'react-bootstrap/Figure';
+import Accordion from 'react-bootstrap/Accordion';
+import Carousel from 'react-bootstrap/Carousel';
 
 
 function MoviesLayout() {
@@ -33,10 +36,9 @@ function MoviesLayout() {
                     <Row>
                         <Col>
                             <div>
-                                <div className="custom-grid-flex justify-content-center">
-                                    <NavLink className="btn" to="/movies/0/25">Movies</NavLink>
-                                    <NavLink className="btn" to="/persons/0/25">Persons</NavLink>
-
+                                <div className="custom-grid-flex justify-content-center" style={{marginTop:"20px"}}>
+                                    <NavLink className="btn" to="/movies/0/25" style={{ borderColor: "black", marginTop: "20px" }}>Movies</NavLink>
+                                    <NavLink className="btn" to="/persons/0/25" style={{ borderColor: "black", marginTop: "20px" }}>Persons</NavLink>
                                 </div>
                                 <Outlet /> { /* subpages will appear here */}
                             </div>
@@ -73,16 +75,16 @@ function MoviesList() {
         maxPage = 7;
     }
 
-    for (let number = minPage; number <= maxPage; number++) { 
+    for (let number = minPage; number <= maxPage; number++) {
         var numbers = Number(number) - 1;
         var pagnavlink = "/movies/" + numbers + "/25";
         pagPages.push(
-            <NavLink onClick={goToTop} className="btn" to={pagnavlink}> 
+            <NavLink onClick={goToTop} className="btn" to={pagnavlink}>
                 {number}
-                </NavLink>,
+            </NavLink>,
         );
     }
-   
+
 
 
 
@@ -145,8 +147,8 @@ function MoviesList() {
                 <Pagination linkAs={NavLink}
                     total={100} limit={10} >{pagPages}</Pagination>
             </div>
-            
-            
+
+
             {(status === "done") &&
                 <Container className="custom-grid-flex justify-content-center">
                     <Row xs={1} md={3} className="custom-width g-4">
@@ -155,7 +157,7 @@ function MoviesList() {
                             items.$values.map((item) => (
 
                                 <Col>
-                                    <Card onClick={() => goToMovie(item.omdB_Datasets.tconst)} className="card-element-movie" key={item.url} style={{ }} >
+                                    <Card onClick={() => goToMovie(item.omdB_Datasets.tconst)} className="card-element-movie" key={item.url} style={{}} >
                                         <Card.Img src={item.omdB_Datasets?.poster} style={{ maxHeight: '18rem' }}></Card.Img>
                                         <Card.Title style={{ padding: '20px' }}>{item.primarytitle}</Card.Title>
                                         <Card.Text style={{ padding: '20px' }}>{item.omdB_Datasets?.plot.slice(0, 250) + "..."}</Card.Text>
@@ -170,7 +172,7 @@ function MoviesList() {
                 <Pagination linkAs={NavLink}
                     total={100} limit={10} >{pagPages}</Pagination>
             </div>
-            
+
         </div >
     );
 }
@@ -259,26 +261,97 @@ function Movie() {
     useEffect(() => { loadMovie() }, [tconst]);
 
     return (
-        <div><h1> her er filmen </h1>
+        <div>
             {(status === "done") &&
-                <Container className="custom-grid-flex">
+                <Container fluid style={{ padding: "20px" }}>
                     {console.log(items)}
                     {console.log(similarMovies)}
                     {console.log(movieActors)}
-                    <h1>{items.primarytitle}</h1>
+                    <Container className="custom-grid-flex justify-center" style={{ border: "solid 1px", padding: "20px", borderRadius: "5px" }}>
+                        <Row xs={1} md={2} className="custom-grid-flex">
+                            <Col className="sm">
+                                <Figure style={{ display: "block" }}>
+                                    <Figure.Image
+                                        width="100%"
+                                        height="100%"
+                                        alt="Movie poster"
+                                        src={items.movie_Ratings.movie_title.omdB_Datasets.poster}
+                                    />
+                                    <Figure.Caption>
+                                        Poster for movie {items.primarytitle}
+                                    </Figure.Caption>
+                                </Figure>
+                            </Col>
+                            <Col className="sm">
+                                <h2>{items.primarytitle}</h2>
+                                <p>{items.movie_Ratings.movie_title.omdB_Datasets.plot}</p>
+                            </Col>
+                        </Row>
+
+                    </Container>
+                    <Container style={{ paddingTop: "20px", paddingBottom: "20px" }}>
+                        <Row>
+                            <Col>
+                                <Accordion defaultActiveKey="0">
+                                    <Accordion.Item eventKey="0">
+                                        <Accordion.Header>Actors</Accordion.Header>
+                                        <Accordion.Body>
+                                            {
+                                                movieActors.$values.map((item) => (
+
+
+                                                    <li><NavLink to={"/persons/" + item.nconst}>{item.primaryname}</NavLink> Rating: {item.name_rating}</li>
+
+                                                ))
+                                            }
+                                        </Accordion.Body>
+                                    </Accordion.Item>
+                                </Accordion>
+                            </Col>
+                        </Row>
+                    </Container>
+                    {(similarMovies.$values.length > 0) &&
+                        <Container style={{ paddingBottom: "20px" }}>
+                            <Row>
+                                <Col>
+                                    <Accordion defaultActiveKey="0">
+                                        <Accordion.Item eventKey="0">
+                                            <Accordion.Header>Similar Movies</Accordion.Header>
+                                            <Accordion.Body>
+                                                {
+                                                    similarMovies.$values.map((item) => (
+
+
+                                                        <li><NavLink to={"/movies/" + item.tconst}>{item.primarytitle}</NavLink></li>
+
+                                                    ))
+                                                }
+                                            </Accordion.Body>
+                                        </Accordion.Item>
+                                    </Accordion>
+                                </Col>
+                            </Row>
+                        </Container>
+                    }
+                    {(similarMovies.$values.length < 1) &&
+                        <h2>No similar movies found :-(</h2>
+                    }
+
                     {(cookies.user_id != undefined) &&
                         <div>
-                            <form onSubmit={bookmarkMovie}>
-                                <button type="submit" variant="outline-success" >bookmark</button>
-                            </form>
+                            <h2>Write your rating: </h2>
                             <form onSubmit={rateMovie}>
                                 <Form.Control
                                     type="Rating"
                                     placeholder="Rating"
                                     className="me-3"
                                     aria-label="Rating"
+                                    style={{ width:"20px" }}
                                 />
-                                <button type="submit" variant="outline-success" >rate movie</button>
+                                <button className="btn" type="submit" variant="outline-success" style={{marginTop: "10px" }} >rate movie</button>
+                            </form>
+                            <form onSubmit={bookmarkMovie}>
+                                <button className="btn" type="submit" variant="outline-success" style={{width: "100px", marginTop: "10px"}} >bookmark</button>
                             </form>
                         </div>
                     }

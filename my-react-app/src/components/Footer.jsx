@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import {NavLink} from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 
 const Footer = () =>
@@ -20,15 +20,21 @@ const Footer = () =>
                                 <NavLink className="nav-link" to="/movies/0/25">Movies</NavLink>
                                 <NavLink className="nav-link" to="/persons/0/25">Persons</NavLink>
                             </Col>
+
+                        </Row>
+                        <Row>
+                            <Col style={{
+                                display:"flex",
+                                justifyContent: "end"}}>
+                                <NavLink onClick={goToTop} ><img src="https://cdn-icons-png.flaticon.com/512/4510/4510643.png" style={{ height: "40px", width: "40px", color: "white"}}></img></NavLink>
+                            </Col>
                         </Row>
                     </Container>
                 </Col>
             </Row>
         </Container>
 
-        <NavLink onClick={goToTop} ><div>To the top</div></NavLink>
-
-</footer>
+    </footer>
 
 const goToTop = () => {
     window.scrollTo({
